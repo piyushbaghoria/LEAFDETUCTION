@@ -1,0 +1,20 @@
+0 
+Bell Pepper Damaged
+Bell Pepper Dried
+Bell Pepper Ripe
+Bell Pepper Unripe
+Bell Pepper Old
+Chile Pepper Damaged
+Chile Pepper Dried
+Chile Pepper Old
+Chile Pepper Ripe
+Chile Pepper Unripe
+New Mexico Green Chile Damaged
+New Mexico Green Chile Dried
+New Mexico Green Chile Old
+New Mexico Green Chile Ripe
+New Mexico Green Chile Unripe
+Tomato Damaged
+Tomato Old
+Tomato Ripe
+Tomato Unripe
