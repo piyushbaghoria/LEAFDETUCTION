@@ -4,16 +4,14 @@ import numpy as np
 from PIL import Image
 import io
 
-# Load the TFLite model and allocate tensors
 interpreter = tf.lite.Interpreter(model_path='leaf_model.tflite')
 interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
-# Read labels
 labels = open('LABEL.txt').read().splitlines()
 
-app = Flask(__name__)
+app = Flask(__name__)  # <--- IMPORTANT!
 
 def predict(img_bytes):
     img = Image.open(io.BytesIO(img_bytes)).convert('RGB').resize((224, 224))
@@ -26,12 +24,13 @@ def predict(img_bytes):
 
 @app.route('/classify', methods=['POST'])
 def classify():
+    if 'image' not in request.files:
+        return jsonify(error="Image file missing"), 400
     img = request.files['image'].read()
     label, conf = predict(img)
     parts = label.split()
     crop = " ".join(parts[:-1])
     status = parts[-1]
-
     cures = {
         'Damaged': ('Remove damaged parts; use mild pesticide.', 'क्षतिग्रस्त हिस्सों को हटाएँ; हल्का कीटनाशक लगाएँ।'),
         'Dried': ('Water adequately; improve soil.', 'पर्याप्त पानी दें; मिट्टी सुधारें।'),
@@ -39,7 +38,6 @@ def classify():
         'Ripe': ('Ready for harvest.', 'कटाई के लिए तैयार।'),
         'Old': ('Discard; not for sale.', 'फेंक दें।')
     }
-
     cure_eng, cure_hin = cures.get(status, ('No recommendation', 'कोई सुझाव नहीं'))
 
     return jsonify(
@@ -49,6 +47,3 @@ def classify():
         cure_eng=cure_eng,
         cure_hin=cure_hin
     )
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0')
