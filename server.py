@@ -26,24 +26,30 @@ def predict(img_bytes):
 def classify():
     if 'image' not in request.files:
         return jsonify(error="Image file missing"), 400
-    img = request.files['image'].read()
-    label, conf = predict(img)
-    parts = label.split()
-    crop = " ".join(parts[:-1])
-    status = parts[-1]
-    cures = {
-        'Damaged': ('Remove damaged parts; use mild pesticide.', 'क्षतिग्रस्त हिस्सों को हटाएँ; हल्का कीटनाशक लगाएँ।'),
-        'Dried': ('Water adequately; improve soil.', 'पर्याप्त पानी दें; मिट्टी सुधारें।'),
-        'Unripe': ('Let it mature.', 'पकने दें।'),
-        'Ripe': ('Ready for harvest.', 'कटाई के लिए तैयार।'),
-        'Old': ('Discard; not for sale.', 'फेंक दें।')
-    }
-    cure_eng, cure_hin = cures.get(status, ('No recommendation', 'कोई सुझाव नहीं'))
+    try:
+        img = request.files['image'].read()
+        label, conf = predict(img)
+        parts = label.split()
+        crop = " ".join(parts[:-1])
+        status = parts[-1]
 
-    return jsonify(
-        crop=crop,
-        status=status,
-        confidence=conf,
-        cure_eng=cure_eng,
-        cure_hin=cure_hin
-    )
+        cures = {
+            'Damaged': ('Remove damaged parts; use mild pesticide.', 'क्षतिग्रस्त हिस्सों को हटाएँ; हल्का कीटनाशक लगाएँ।'),
+            'Dried': ('Water adequately; improve soil.', 'पर्याप्त पानी दें; मिट्टी सुधारें।'),
+            'Unripe': ('Let it mature.', 'पकने दें।'),
+            'Ripe': ('Ready for harvest.', 'कटाई के लिए तैयार।'),
+            'Old': ('Discard; not for sale.', 'फेंक दें।')
+        }
+
+        cure_eng, cure_hin = cures.get(status, ('No recommendation', 'कोई सुझाव नहीं'))
+
+        return jsonify(
+            crop=crop,
+            status=status,
+            confidence=conf,
+            cure_eng=cure_eng,
+            cure_hin=cure_hin
+        )
+    except Exception as e:
+        import traceback
+        return jsonify(error="Server error", detail=str(e), traceback=traceback.format_exc()), 500
