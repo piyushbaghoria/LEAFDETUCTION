@@ -14,7 +14,7 @@ labels = open('LABEL.txt').read().splitlines()
 app = Flask(__name__)  # <--- IMPORTANT!
 
 def predict(img_bytes):
-    img = Image.open(io.BytesIO(img_bytes)).convert('RGB').resize((224, 224))
+   img = Image.open(io.BytesIO(img_bytes)).convert('RGB').resize((150, 150))
     data = np.expand_dims(np.array(img, dtype=np.float32) / 255.0, axis=0)
     interpreter.set_tensor(input_details[0]['index'], data)
     interpreter.invoke()
