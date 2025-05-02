@@ -25,8 +25,13 @@ def predict(img_bytes):
 
 @app.route('/classify', methods=['POST'])
 def classify():
-    if 'image' not in request.files:
+    if 'file' not in request.files:
         return jsonify(error="Image file missing"), 400
+
+    img = request.files['file'].read()  # ← Use 'file' instead of 'image'
+    
+    # your prediction logic...
+
     try:
         img = request.files['image'].read()
         label, conf = predict(img)
