@@ -4,14 +4,12 @@ import numpy as np
 from PIL import Image
 import io
 
-interpreter = tf.lite.Interpreter(model_path='leaf_model.tflite')
-interpreter.allocate_tensors()
-input_details = interpreter.get_input_details()
-output_details = interpreter.get_output_details()
+app = Flask(__name__)
+# Allow uploads up to 10 MB
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024   # 10 MB
 
-labels = open('LABEL.txt').read().splitlines()
+# load interpreter, labels, etc. as before...
 
-app = Flask(__name__)  # <--- IMPORTANT!
 
 def predict(img_bytes):
     img = Image.open(io.BytesIO(img_bytes)).convert('RGB').resize((150, 150))
@@ -26,11 +24,9 @@ def predict(img_bytes):
 @app.route('/classify', methods=['POST'])
 def classify():
     if 'file' not in request.files:
-        return jsonify(error="Image file missing"), 400
+    return jsonify(error="No image file"), 400
+img_bytes = request.files['file'].read()
 
-    img = request.files['file'].read()  # ← Use 'file' instead of 'image'
-    
-    # your prediction logic...
 
     try:
         img = request.files['image'].read()
